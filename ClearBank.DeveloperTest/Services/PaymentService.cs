@@ -1,11 +1,22 @@
 ﻿using ClearBank.DeveloperTest.Data;
+using ClearBank.DeveloperTest.Factories;
 using ClearBank.DeveloperTest.Types;
+using System;
 using System.Configuration;
 
 namespace ClearBank.DeveloperTest.Services;
 
 public class PaymentService : IPaymentService
 {
+    private readonly IAccountDataStore accountDataStore;
+
+    public PaymentService(AccountDataStoreType accountDataStoreType, IAccountDataStoreFactory accountDataStoreFactory)
+    {
+        ArgumentNullException.ThrowIfNull(accountDataStoreFactory);
+
+        this.accountDataStore = accountDataStoreFactory.Create(accountDataStoreType);
+    }
+
     public MakePaymentResult MakePayment(MakePaymentRequest request)
     {
         var dataStoreType = ConfigurationManager.AppSettings["DataStoreType"];
