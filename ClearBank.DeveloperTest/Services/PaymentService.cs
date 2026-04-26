@@ -19,25 +19,12 @@ public class PaymentService : IPaymentService
 
     public MakePaymentResult MakePayment(MakePaymentRequest request)
     {
-        var dataStoreType = ConfigurationManager.AppSettings["DataStoreType"];
-
-        Account account = null;
-
-        if (dataStoreType == "Backup")
-        {
-            var accountDataStore = new BackupAccountDataStore();
-            account = accountDataStore.GetAccount(request.DebtorAccountNumber);
-        }
-        else
-        {
-            var accountDataStore = new AccountDataStore();
-            account = accountDataStore.GetAccount(request.DebtorAccountNumber);
-        }
+        Account account = this.accountDataStore.GetAccount(request.DebtorAccountNumber); ;
 
         var result = new MakePaymentResult();
 
         result.Success = true;
-        
+
         switch (request.PaymentScheme)
         {
             case PaymentScheme.Bacs:
@@ -85,17 +72,7 @@ public class PaymentService : IPaymentService
         if (result.Success)
         {
             account.Balance -= request.Amount;
-
-            if (dataStoreType == "Backup")
-            {
-                var accountDataStore = new BackupAccountDataStore();
-                accountDataStore.UpdateAccount(account);
-            }
-            else
-            {
-                var accountDataStore = new AccountDataStore();
-                accountDataStore.UpdateAccount(account);
-            }
+            this.accountDataStore.UpdateAccount(account);
         }
 
         return result;
