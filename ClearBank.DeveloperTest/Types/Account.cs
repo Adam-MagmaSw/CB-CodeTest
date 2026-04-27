@@ -6,4 +6,9 @@ public class Account
     public decimal Balance { get; set; }
     public AccountStatus Status { get; set; }
     public AllowedPaymentSchemes AllowedPaymentSchemes { get; set; }
+
+    public void Debit(decimal amount)
+    {
+        this.Balance -= amount;
+    }
 }

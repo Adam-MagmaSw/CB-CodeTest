@@ -1,6 +1,7 @@
 ﻿using ClearBank.DeveloperTest.Data;
 using ClearBank.DeveloperTest.Factories;
 using ClearBank.DeveloperTest.Types;
+using ClearBank.DeveloperTest.Validation;
 using System;
 
 namespace ClearBank.DeveloperTest.Services;
@@ -18,48 +19,21 @@ public class PaymentService : IPaymentService
 
     public MakePaymentResult MakePayment(MakePaymentRequest request)
     {
-        Account account = this.accountDataStore.GetAccount(request.DebtorAccountNumber); ;
+        Account account = this.accountDataStore.GetAccount(request.DebtorAccountNumber);
 
-        var result = new MakePaymentResult();
-
-        result.Success = ValidatePaymentRequestForAccount(request, account);
-
-        if (result.Success)
+        if (!PaymentRequestValidator.IsPaymentRequestValidForAccount(request, account))
         {
-            this.ExecutePaymentRequest(request, account);
+            return MakePaymentResult.FailResult();
         }
 
-        return result;
+        this.ExecutePaymentRequest(request, account);
+
+        return MakePaymentResult.SuccessResult();
     }
 
     private void ExecutePaymentRequest(MakePaymentRequest request, Account account)
     {
-        account.Balance -= request.Amount;
+        account.Debit(request.Amount);
         this.accountDataStore.UpdateAccount(account);
-    }
-
-    private static bool ValidatePaymentRequestForAccount(MakePaymentRequest request, Account account)
-    {
-        if (account == null)
-        {
-            return false;
-        }
-
-        if (!account.AllowedPaymentSchemes.HasFlag(request.PaymentScheme.ToAllowedPaymentSchemes()))
-        {
-            return false;
-        }
-
-        if (request.PaymentScheme == PaymentScheme.FasterPayments && account.Balance < request.Amount)
-        {
-            return false;
-        }
-
-        if (request.PaymentScheme == PaymentScheme.Chaps && account.Status != AccountStatus.Live)
-        {
-            return false;
-        }
-
-        return true;
     }
 }
