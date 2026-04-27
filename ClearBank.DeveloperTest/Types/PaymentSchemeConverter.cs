@@ -11,7 +11,7 @@ internal static class PaymentSchemeConverter
             PaymentScheme.Bacs => AllowedPaymentSchemes.Bacs,
             PaymentScheme.FasterPayments => AllowedPaymentSchemes.FasterPayments,
             PaymentScheme.Chaps => AllowedPaymentSchemes.Chaps,
-            _ => throw new ArgumentOutOfRangeException(nameof(paymentScheme), $"Not expected payment scheme value: {paymentScheme}"),
+            _ => throw new ArgumentOutOfRangeException(nameof(paymentScheme), $"Unexpected payment scheme value: {paymentScheme}"),
         };
     }
 }

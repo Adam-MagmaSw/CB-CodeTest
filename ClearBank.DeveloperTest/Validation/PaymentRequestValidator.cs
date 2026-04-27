@@ -12,7 +12,7 @@ internal static class PaymentRequestValidator
             PaymentScheme.Bacs => BacsPaymentRequestValidator.IsPaymentRequestValidForAccount(request, account),
             PaymentScheme.FasterPayments => FasterPaymentPaymentRequestValidator.IsPaymentRequestValidForAccount(request, account),
             PaymentScheme.Chaps => ChapsPaymentRequestValidator.IsPaymentRequestValidForAccount(request, account),
-            _ => throw new ArgumentOutOfRangeException(nameof(request.PaymentScheme), $"Not expected payment scheme value: {request.PaymentScheme}"),
+            _ => throw new ArgumentOutOfRangeException(nameof(request.PaymentScheme), $"Unexpected payment scheme value: {request.PaymentScheme}"),
         };
     }
 }
