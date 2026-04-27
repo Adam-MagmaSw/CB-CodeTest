@@ -1,9 +1,8 @@
 ﻿using ClearBank.DeveloperTest.Data;
 
-namespace ClearBank.DeveloperTest.Factories
+namespace ClearBank.DeveloperTest.Factories;
+
+public interface IAccountDataStoreFactory
 {
-    public interface IAccountDataStoreFactory
-    {
-        IAccountDataStore Create(AccountDataStoreType accountDataStoreType);
-    }
+    IAccountDataStore Create(AccountDataStoreType accountDataStoreType);
 }
