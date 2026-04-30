@@ -7,7 +7,7 @@ public class MakePaymentResult
         Success = success;
     }
 
-    public bool Success { get; set; }
+    public bool Success { get; }
 
     public static MakePaymentResult SuccessResult() => new MakePaymentResult(true);
 

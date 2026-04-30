@@ -64,7 +64,7 @@ public class PaymentServiceTests
     [TestCase(PaymentScheme.Chaps, AllowedPaymentSchemes.FasterPayments | AllowedPaymentSchemes.Bacs)]
     public void MakePayment_WhenAccountDoesNotAllowPaymentScheme_ReturnsFailureAndDoesNotUpdateAccount(PaymentScheme paymentScheme, AllowedPaymentSchemes allowedPaymentSchemes)
     {
-        var account = new Account { Balance = 100m, AllowedPaymentSchemes = allowedPaymentSchemes };
+        var account = new Account("123ABC", 100m, AccountStatus.Live, allowedPaymentSchemes);
         var dataStore = Substitute.For<IAccountDataStore>();
         dataStore.GetAccount("debtor-1").Returns(account);
         var service = CreateService(dataStore);
@@ -84,7 +84,7 @@ public class PaymentServiceTests
     [Test]
     public void MakePayment_WhenFasterPaymentsBalanceIsInsufficient_ReturnsFailureAndDoesNotUpdateAccount()
     {
-        var account = new Account { Balance = 19.99m, AllowedPaymentSchemes = AllowedPaymentSchemes.FasterPayments };
+        var account = new Account("123ABC", 19.99m, AccountStatus.Live, AllowedPaymentSchemes.FasterPayments);
         var dataStore = Substitute.For<IAccountDataStore>();
         dataStore.GetAccount("debtor-2").Returns(account);
         var service = CreateService(dataStore);
@@ -105,12 +105,7 @@ public class PaymentServiceTests
     [TestCase(AccountStatus.Disabled)]
     public void MakePayment_WhenChapsAccountIsNotLive_ReturnsFailureAndDoesNotUpdateAccount(AccountStatus accountStatus)
     {
-        var account = new Account
-        {
-            Balance = 100m,
-            AllowedPaymentSchemes = AllowedPaymentSchemes.Chaps,
-            Status = accountStatus
-        };
+        var account = new Account("123ABC", 100m, accountStatus, AllowedPaymentSchemes.Chaps);
         var dataStore = Substitute.For<IAccountDataStore>();
         dataStore.GetAccount("debtor-3").Returns(account);
         var service = CreateService(dataStore);
@@ -138,7 +133,7 @@ public class PaymentServiceTests
     [TestCase(PaymentScheme.Chaps, AllowedPaymentSchemes.Bacs | AllowedPaymentSchemes.FasterPayments | AllowedPaymentSchemes.Chaps)]
     public void MakePayment_WhenAccountAllowsPaymentSchemeHasEnoughBalanceAndIsLive_ReturnsSuccessAndUpdatesAccount(PaymentScheme paymentScheme, AllowedPaymentSchemes allowedPaymentSchemes)
     {
-        var account = new Account { Balance = 100m, AllowedPaymentSchemes = allowedPaymentSchemes, Status = AccountStatus.Live };
+        var account = new Account("123ABC", 100m, AccountStatus.Live, allowedPaymentSchemes);
         var dataStore = Substitute.For<IAccountDataStore>();
         dataStore.GetAccount("debtor-1").Returns(account);
         var service = CreateService(dataStore);
